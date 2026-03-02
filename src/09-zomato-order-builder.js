@@ -47,4 +47,5 @@
  */
 export function buildZomatoOrder(cart, coupon) {
   // Your code here
+  if(!Array.isArray(cart) || cart.length === 0) return null;
 }

@@ -31,4 +31,25 @@
  */
 export function fixBollywoodTitle(title) {
   // Your code here
+  if (typeof title !== "string") return "";
+
+  const cleaned = title.trim().replace(/\s+/g, " ");
+  if (cleaned === "") return "";
+
+  const exceptions = ["ka", "ki", "ke", "se", "aur", "ya", "the", "of", "in", "a", "an"];
+
+  const words = cleaned.split(" ");
+
+  const fixedTitle = words.map((word, index) => {
+    const lowerWord = word.toLowerCase();
+
+    if(exceptions.includes(word) && index !== 0){
+      return lowerWord;
+    }
+
+    const finalWord = lowerWord.charAt(0).toUpperCase() + lowerWord.slice(1);
+    return finalWord;
+  })
+
+  return fixedTitle.join(" ");
 }

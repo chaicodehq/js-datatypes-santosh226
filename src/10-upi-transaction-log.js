@@ -48,4 +48,59 @@
  */
 export function analyzeUPITransactions(transactions) {
   // Your code here
+  if(!Array.isArray(transactions) || transactions.length === 0) return null;
+
+  const validTransactions = transactions.filter(txn => {  
+    return typeof txn.amount === "number" && txn.amount > 0 &&
+           (txn.type === "credit" || txn.type === "debit");
+  });
+
+  if(validTransactions.length === 0) return null;
+  
+  const totalCredit = validTransactions
+    .filter(txn => txn.type === "credit")
+    .reduce((sum, txn) => sum + txn.amount, 0);
+
+  const totalDebit = validTransactions
+    .filter(txn => txn.type === "debit")
+    .reduce((sum, txn) => sum + txn.amount, 0);
+
+  const netBalance = totalCredit - totalDebit;
+  const transactionCount = validTransactions.length;
+  const avgTransaction = Math.round(validTransactions.reduce((sum, txn) => sum + txn.amount, 0) / transactionCount);
+
+  const highestTransaction = validTransactions.reduce((highest, current) => {
+    return current.amount > highest.amount ? current : highest;
+  })
+
+  const categoryBreakdown = {};
+  validTransactions.forEach(txn => {
+    categoryBreakdown[txn.category] = (categoryBreakdown[txn.category] || 0) + txn.amount;
+  })
+
+  const contactCount = {};
+  validTransactions.forEach(txn => {
+    contactCount[txn.to] = (contactCount[txn.to] || 0) + 1;
+  })
+
+  const frequentContact = Object.entries(contactCount).reduce((maxContact, [contact, count]) => {
+    return count > maxContact.count ? { contact, count } : maxContact;
+  }, { contact: null, count: -1 }).contact;
+
+  const allAbove100 = validTransactions.every(txn => txn.amount > 100);
+  
+  const hasLargeTransaction = validTransactions.some(txn => txn.amount >= 5000);
+
+  return {
+    totalCredit,
+    totalDebit,
+    netBalance,
+    transactionCount,
+    avgTransaction,
+    highestTransaction,
+    categoryBreakdown,
+    frequentContact,
+    allAbove100,
+    hasLargeTransaction
+  };
 }
